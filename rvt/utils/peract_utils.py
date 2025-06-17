@@ -12,7 +12,7 @@ from rvt.utils.lr_sched_utils import GradualWarmupScheduler
 
 # Contants
 # TODO: Unclear about the best way to handle them
-CAMERAS = ["front", "left_shoulder", "right_shoulder", "wrist"]
+CAMERAS = ["front"]
 SCENE_BOUNDS = [
     -0.3,
     -0.5,
