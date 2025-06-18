@@ -35,7 +35,7 @@ def create_replay(
     cameras: list,
     voxel_sizes,
     replay_size=3e5,
-    image_size,
+    image_size=128,
 ):
     
     IMAGE_SIZE = image_size
