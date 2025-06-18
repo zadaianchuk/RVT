@@ -36,8 +36,12 @@ def get_dataset(
     device,
     num_workers,
     only_train,
+    scene_bounds=None,
+    image_size=128,
     sample_distribution_mode="transition_uniform",
 ):
+    
+    SCENE_BOUNDS=scene_bounds
 
     train_replay_buffer = create_replay(
         batch_size=BATCH_SIZE_TRAIN,
@@ -45,6 +49,7 @@ def get_dataset(
         disk_saving=True,
         cameras=CAMERAS,
         voxel_sizes=VOXEL_SIZES,
+        image_size=image_size,
     )
     if not only_train:
         test_replay_buffer = create_replay(
@@ -53,6 +58,7 @@ def get_dataset(
             disk_saving=True,
             cameras=CAMERAS,
             voxel_sizes=VOXEL_SIZES,
+            image_size=image_size,
         )
 
     # load pre-trained language model

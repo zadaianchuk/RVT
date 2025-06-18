@@ -23,7 +23,7 @@ from yarr.replay_buffer.uniform_replay_buffer import UniformReplayBuffer
 from rlbench.backend.observation import Observation
 from rlbench.demo import Demo
 
-from rvt.utils.peract_utils import LOW_DIM_SIZE, IMAGE_SIZE, CAMERAS
+from rvt.utils.peract_utils import LOW_DIM_SIZE, CAMERAS
 from rvt.libs.peract.helpers.demo_loading_utils import keypoint_discovery
 from rvt.libs.peract.helpers.utils import extract_obs
 
@@ -35,7 +35,10 @@ def create_replay(
     cameras: list,
     voxel_sizes,
     replay_size=3e5,
+    image_size,
 ):
+    
+    IMAGE_SIZE = image_size
 
     trans_indicies_size = 3 * len(voxel_sizes)
     rot_and_grip_indicies_size = 3 + 1

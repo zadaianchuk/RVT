@@ -37,9 +37,6 @@ from rvt.utils.rvt_utils import (
 )
 from rvt.utils.peract_utils import (
     CAMERAS,
-    SCENE_BOUNDS,
-    IMAGE_SIZE,
-    DATA_FOLDER,
 )
 
 
@@ -168,14 +165,18 @@ def experiment(rank, cmd_args, devices, port):
 
     # Things to change
     BATCH_SIZE_TRAIN = exp_cfg.bs
-    NUM_TRAIN = 100
+    NUM_TRAIN = exp_cfg.episodes
     # to match peract, iterations per epoch
     TRAINING_ITERATIONS = int(exp_cfg.train_iter // (exp_cfg.bs * len(devices)))
     EPOCHS = exp_cfg.epochs
-    TRAIN_REPLAY_STORAGE_DIR = "replay/replay_train"
-    TEST_REPLAY_STORAGE_DIR = "replay/replay_val"
+    TRAIN_REPLAY_STORAGE_DIR = exp_cfg.replay_dir + "/replay_train"
+    TEST_REPLAY_STORAGE_DIR = exp_cfg.replay_dir + "/replay_val"
     log_dir = get_logdir(cmd_args, exp_cfg)
     tasks = get_tasks(exp_cfg)
+    SCENE_BOUNDS = exp_cfg.scene_bounds 
+    DATA_FOLDER = exp_cfg.data_folder
+    IMAGE_SIZE = exp_cfg.image_size
+
     print("Training on {} tasks: {}".format(len(tasks), tasks))
 
     t_start = time.time()
@@ -190,6 +191,8 @@ def experiment(rank, cmd_args, devices, port):
         None,
         cmd_args.refresh_replay,
         device,
+        scene_bounds=SCENE_BOUNDS,
+        image_size=IMAGE_SIZE,
         num_workers=exp_cfg.num_workers,
         only_train=True,
         sample_distribution_mode=exp_cfg.sample_distribution_mode,

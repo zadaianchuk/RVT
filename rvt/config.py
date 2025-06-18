@@ -7,7 +7,7 @@ from yacs.config import CfgNode as CN
 _C = CN()
 
 _C.agent = "our"
-_C.tasks = "insert_onto_square_peg,open_drawer,place_wine_at_rack_location,light_bulb_in"
+_C.tasks = "slide_block_to_color_target"
 _C.exp_id = "def"
 _C.resume = ""
 # bs per device, effective bs is scaled by num device
@@ -18,6 +18,11 @@ _C.num_workers = 0
 # 'transition_uniform' or 'task_uniform'
 _C.sample_distribution_mode = 'transition_uniform'
 _C.train_iter = 16 * 10000
+_C.episodes = 100
+_C.replay_dir = "replay"
+_C.scene_bounds = [-0.3, -0.5, 0.6, 0.7, 0.5, 1.6]  # [x_min, y_min, z_min, x_max, y_max, z_max] - the metric volume to be voxelized
+_C.image_size = 128
+_C.data_folder = "data"
 
 # arguments present in both peract and rvt
 # some of them donot support every possible combination in peract
