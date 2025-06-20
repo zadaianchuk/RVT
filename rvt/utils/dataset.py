@@ -23,7 +23,7 @@ from yarr.replay_buffer.uniform_replay_buffer import UniformReplayBuffer
 from rlbench.backend.observation import Observation
 from rlbench.demo import Demo
 
-from rvt.utils.peract_utils import LOW_DIM_SIZE, CAMERAS
+from rvt.utils.peract_utils import LOW_DIM_SIZE
 from rvt.libs.peract.helpers.demo_loading_utils import keypoint_discovery
 from rvt.libs.peract.helpers.utils import extract_obs
 
@@ -264,7 +264,7 @@ def _add_keypoints_to_replay(
 
         obs_dict = extract_obs(
             obs,
-            CAMERAS,
+            cameras,
             t=k - next_keypoint_idx,
             prev_action=prev_action,
             episode_length=25,
@@ -315,7 +315,7 @@ def _add_keypoints_to_replay(
     # final step
     obs_dict_tp1 = extract_obs(
         obs_tp1,
-        CAMERAS,
+        cameras,
         t=k + 1 - next_keypoint_idx,
         prev_action=prev_action,
         episode_length=25,
@@ -367,7 +367,7 @@ def fill_replay(
         print("Filling replay ...")
         for d_idx in range(start_idx, start_idx + num_demos):
             print("Filling demo %d" % d_idx)
-            demo = get_stored_demo(data_path=data_path, index=d_idx)
+            demo = get_stored_demo(data_path=data_path, index=d_idx, cameras=cameras)
 
             # get language goal from disk
             varation_descs_pkl_file = os.path.join(
