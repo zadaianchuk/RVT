@@ -12,7 +12,6 @@ from rvt.libs.peract.helpers.utils import extract_obs
 from rvt.utils.rvt_utils import ForkedPdb
 from rvt.utils.dataset import create_replay, fill_replay
 from rvt.utils.peract_utils import (
-    CAMERAS,
     SCENE_BOUNDS,
     EPISODE_FOLDER,
     VARIATION_DESCRIPTIONS_PKL,
@@ -36,12 +35,17 @@ def get_dataset(
     device,
     num_workers,
     only_train,
+    cameras=["front", "left_shoulder", "right_shoulder", "wrist"],
     scene_bounds=None,
     image_size=128,
     sample_distribution_mode="transition_uniform",
 ):
     
     SCENE_BOUNDS=scene_bounds
+    CAMERAS = cameras
+
+    print("Using cameras: {}".format(CAMERAS), flush=True)
+    print("Using scene bounds: {}".format(SCENE_BOUNDS), flush=True)
 
     train_replay_buffer = create_replay(
         batch_size=BATCH_SIZE_TRAIN,

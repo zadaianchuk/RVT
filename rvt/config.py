@@ -23,6 +23,7 @@ _C.replay_dir = "replay"
 _C.scene_bounds = [-0.3, -0.5, 0.6, 0.7, 0.5, 1.6]  # [x_min, y_min, z_min, x_max, y_max, z_max] - the metric volume to be voxelized
 _C.image_size = 128
 _C.data_folder = "data"
+_C.cameras = ["front", "left_shoulder", "right_shoulder", "wrist"]
 
 # arguments present in both peract and rvt
 # some of them donot support every possible combination in peract

@@ -35,9 +35,6 @@ from rvt.utils.rvt_utils import (
     load_agent,
     RLBENCH_TASKS,
 )
-from rvt.utils.peract_utils import (
-    CAMERAS,
-)
 
 
 # new train takes the dataset as input
@@ -176,6 +173,7 @@ def experiment(rank, cmd_args, devices, port):
     SCENE_BOUNDS = exp_cfg.scene_bounds 
     DATA_FOLDER = exp_cfg.data_folder
     IMAGE_SIZE = exp_cfg.image_size
+    CAMERAS = exp_cfg.cameras
 
     print("Training on {} tasks: {}".format(len(tasks), tasks))
 
@@ -191,6 +189,7 @@ def experiment(rank, cmd_args, devices, port):
         None,
         cmd_args.refresh_replay,
         device,
+        cameras=CAMERAS,
         scene_bounds=SCENE_BOUNDS,
         image_size=IMAGE_SIZE,
         num_workers=exp_cfg.num_workers,
