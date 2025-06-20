@@ -42,7 +42,7 @@ setup(
         "Natural Language :: English",
         "Topic :: Scientific/Engineering",
     ],
-    packages=['rvt'],
+    packages=find_packages(),
     install_requires=requirements,
     extras_require={
         "xformers": [
