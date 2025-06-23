@@ -432,6 +432,8 @@ def get_model_index(filename):
 
 def _eval(args):
 
+    print("Cameras used for evaluation: ", args.cameras)
+
     model_paths = []
     if not (args.peract_official):
         assert args.model_name is not None
@@ -498,6 +500,7 @@ def _eval(args):
                 eval_log_dir=args.eval_log_dir,
                 device=args.device,
                 use_input_place_with_mean=args.use_input_place_with_mean,
+                cameras=args.cameras,
             )
 
             agent_eval_log_dir = os.path.join(
@@ -509,6 +512,7 @@ def _eval(args):
                 peract_model_dir=args.peract_model_dir,
                 device=args.device,
                 use_input_place_with_mean=args.use_input_place_with_mean,
+                cameras=args.cameras,
             )
             agent_eval_log_dir = os.path.join(args.eval_log_dir, "final")
 
@@ -527,6 +531,7 @@ def _eval(args):
             log_dir=agent_eval_log_dir,
             verbose=True,
             save_video=args.save_video,
+            cameras=args.cameras,
         )
         print(f"model {model_path}, scores {scores}")
         task_scores = {}
@@ -544,6 +549,7 @@ if __name__ == "__main__":
     parser = get_eval_parser()
     parser.add_argument("--cameras", type=str, nargs="+", default=["front", "left_shoulder", "right_shoulder", "wrist"])
     args = parser.parse_args()
+
 
     if args.log_name is None:
         args.log_name = "none"
