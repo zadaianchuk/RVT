@@ -296,6 +296,7 @@ class RVTAgent:
         rot_ver: int = 0,
         rot_x_y_aug: int = 2,
         log_dir="",
+        clamp_debug: bool = False,
     ):
         """
         :param gt_hm_sigma: the std of the groundtruth hm, currently for for
@@ -352,6 +353,8 @@ class RVTAgent:
         self.num_all_rot = self._num_rotation_classes * 3
 
         self.scaler = GradScaler(enabled=self.amp)
+
+        self.clamp_debug = clamp_debug
 
     def build(self, training: bool, device: torch.device = None):
         self._training = training
@@ -683,6 +686,9 @@ class RVTAgent:
                         ],
                         action_rot_x_one_hot.argmax(-1),
                     ).mean()
+                    # NaN FIX: Clip rotation loss to prevent explosion
+                    if self.clamp_debug:
+                        rot_loss_x = torch.clamp(rot_loss_x, max=10.0)
 
                     rot_loss_y = self._cross_entropy_loss(
                         rot_q[
@@ -691,6 +697,9 @@ class RVTAgent:
                         ],
                         action_rot_y_one_hot.argmax(-1),
                     ).mean()
+                    # NaN FIX: Clip rotation loss to prevent explosion
+                    if self.clamp_debug:
+                        rot_loss_y = torch.clamp(rot_loss_y, max=10.0)
 
                     rot_loss_z = self._cross_entropy_loss(
                         rot_q[
@@ -699,6 +708,13 @@ class RVTAgent:
                         ],
                         action_rot_z_one_hot.argmax(-1),
                     ).mean()
+                    # NaN FIX: Clip rotation loss Z (most critical) to prevent explosion
+                    if self.clamp_debug:
+                        rot_loss_z = torch.clamp(rot_loss_z, max=8.0)  # Lower threshold for Z
+                    
+                    # NaN FIX: Early warning system
+                    if rot_loss_z > 6.0:
+                        print(f"⚠️ WARNING: High rot_loss_z={rot_loss_z:.3f} at step {step}")
 
                     grip_loss = self._cross_entropy_loss(
                         grip_q,
@@ -717,9 +733,26 @@ class RVTAgent:
                     + grip_loss
                     + collision_loss
                 )
+                
+                # NaN FIX: Detect and handle NaN before backward pass
+                if torch.isnan(total_loss):
+                    print(f"🚨 CRITICAL: NaN detected in total_loss at step {step}")
+                    print(f"  trans_loss: {trans_loss.item():.6f}")
+                    print(f"  rot_loss_x: {rot_loss_x.item():.6f}")
+                    print(f"  rot_loss_y: {rot_loss_y.item():.6f}")
+                    print(f"  rot_loss_z: {rot_loss_z.item():.6f}")
+                    print(f"  grip_loss: {grip_loss.item():.6f}")
+                    print(f"  collision_loss: {collision_loss.item():.6f}")
+                    # Skip this training step
+                    return {"nan_detected": True, "step": step}
 
             self._optimizer.zero_grad(set_to_none=True)
             self.scaler.scale(total_loss).backward()
+            
+            # NaN FIX: Clip gradients to prevent explosion
+            self.scaler.unscale_(self._optimizer)
+            torch.nn.utils.clip_grad_norm_(self._network.parameters(), max_norm=1.0)
+            
             self.scaler.step(self._optimizer)
             self.scaler.update()
             self._lr_sched.step()
