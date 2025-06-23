@@ -16,6 +16,8 @@ from multiprocessing import Value
 from tensorflow.python.summary.summary_iterator import summary_iterator
 from copy import deepcopy
 
+from rvt.libs.peract_colab.peract_colab.rlbench.utils import CAMERAS
+
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 os.environ["BITSANDBYTES_NOWELCOME"] = "1"
 
@@ -38,7 +40,6 @@ from rvt.utils.custom_rlbench_env import (
     CustomMultiTaskRLBenchEnv2 as CustomMultiTaskRLBenchEnv,
 )
 from rvt.utils.peract_utils import (
-    CAMERAS,
     SCENE_BOUNDS,
     IMAGE_SIZE,
     get_official_peract,
@@ -63,7 +64,9 @@ def load_agent(
     eval_log_dir="",
     device=0,
     use_input_place_with_mean=False,
+    cameras=["front", "left_shoulder", "right_shoulder", "wrist"],
 ):
+    CAMERAS = cameras
     device = f"cuda:{device}"
 
     if not (peract_official):
@@ -206,7 +209,10 @@ def eval(
     log_dir=None,
     verbose=True,
     save_video=False,
+    cameras=["front", "left_shoulder", "right_shoulder", "wrist"],
 ):
+    CAMERAS = cameras
+
     agent.eval()
     if isinstance(agent, rvt_agent.RVTAgent):
         agent.load_clip()
@@ -536,7 +542,7 @@ def _eval(args):
 
 if __name__ == "__main__":
     parser = get_eval_parser()
-
+    parser.add_argument("--cameras", type=str, nargs="+", default=["front", "left_shoulder", "right_shoulder", "wrist"])
     args = parser.parse_args()
 
     if args.log_name is None:
